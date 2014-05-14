@@ -64,15 +64,11 @@ class MonitorBotService(Service):
 			self._bot.msg(self._channel, msg)
 			pass
 
-
-
 		watchMask = ( inotify.IN_MODIFY
 					| inotify.IN_CREATE
 					| inotify.IN_DELETE
-					| inotify.IN_DELETE_SELF
 					| inotify.IN_MOVED_FROM
-					| inotify.IN_MOVED_TO
-					| inotify.IN_MOVE_SELF )
+					| inotify.IN_MOVED_TO )
 
 		notifier = inotify.INotify()
 		notifier.startReading()
