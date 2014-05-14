@@ -1,0 +1,2 @@
+run:
+	twistd -n monitorbot
