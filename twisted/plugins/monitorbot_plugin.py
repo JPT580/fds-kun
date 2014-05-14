@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from ConfigParser import ConfigParser
 
 from twisted.application.service import IServiceMaker, Service
@@ -19,7 +21,7 @@ class MonitorBotService(Service):
 		self._channel = channel
 		self._nickname = nickname
 		self._realname = realname
-		self._path = path
+		self._watch_path = filepath.FilePath(path)
 
 	def startService(self):
 		"""Construct a client & connect to server."""
@@ -40,14 +42,41 @@ class MonitorBotService(Service):
 			self._realname
 		)
 
+		def humanReadableMask(mask):
+			flags_to_human = [
+				(inotify.IN_MODIFY, 'geändert'),
+				(inotify.IN_CREATE, 'erstellt'),
+				(inotify.IN_DELETE, 'gelöscht'),
+				(inotify.IN_MOVED_FROM, 'umbenannt von'),
+				(inotify.IN_MOVED_TO, 'umbenannt nach')
+			]
+
+			s = []
+			for k, v in flags_to_human:
+				if k & mask:
+					s.append(v)
+			return s
+
 		def fsnotify(ignored, filepath, mask):
-			msg = "event %s on %s" % (', '.join(inotify.humanReadableMask(mask)), filepath)
+			path_segments = filepath.segmentsFrom(self._watch_path)
+			new_path = '/'.join(path_segments)
+			msg = "ftp> /%s (%s)" % (new_path, ', '.join(humanReadableMask(mask)))
 			self._bot.msg(self._channel, msg)
 			pass
 
+
+
+		watchMask = ( inotify.IN_MODIFY
+					| inotify.IN_CREATE
+					| inotify.IN_DELETE
+					| inotify.IN_DELETE_SELF
+					| inotify.IN_MOVED_FROM
+					| inotify.IN_MOVED_TO
+					| inotify.IN_MOVE_SELF )
+
 		notifier = inotify.INotify()
 		notifier.startReading()
-		notifier.watch(filepath.FilePath(self._path), autoAdd=True, recursive=True, callbacks=[fsnotify])
+		notifier.watch(self._watch_path, autoAdd=True, recursive=True, callbacks=[fsnotify], mask=watchMask)
 
 		"""Attach defined callbacks."""
 		return client.connect(factory).addCallbacks(connected, failure)
