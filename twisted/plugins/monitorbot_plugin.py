@@ -23,7 +23,7 @@ class MonitorBotService(Service):
 		self._realname = realname
 		self._watch_path = filepath.FilePath(path)
 		self._messages = []
-		self.callid = None
+		self._callid = None
 
 	def startService(self):
 		"""Construct a client & connect to server."""
