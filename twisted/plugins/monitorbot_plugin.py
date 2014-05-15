@@ -65,7 +65,9 @@ class MonitorBotService(Service):
 			path_segments = filepath.segmentsFrom(self._watch_path)
 			new_path = '/'.join(path_segments)
 			msg = "ftp> /%s (%s)" % (new_path, ', '.join(humanReadableMask(mask)))
-			self._messages.append(msg)
+			if msg not in self._messages:
+				self._messages.append(msg)
+
 			self._callid = reactor.callLater(5.0, sendQueuedMessages)
 
 		def sendQueuedMessages():
@@ -75,6 +77,7 @@ class MonitorBotService(Service):
 			else:
 				for msg in self._messages:
 					self._bot.msg(self._channel, msg)
+			self._messages = []
 
 		watchMask = ( inotify.IN_MODIFY
 					| inotify.IN_CREATE
