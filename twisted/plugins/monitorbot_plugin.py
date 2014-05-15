@@ -22,6 +22,8 @@ class MonitorBotService(Service):
 		self._nickname = nickname
 		self._realname = realname
 		self._watch_path = filepath.FilePath(path)
+		self._messages = []
+		self.callid = None
 
 	def startService(self):
 		"""Construct a client & connect to server."""
@@ -58,11 +60,21 @@ class MonitorBotService(Service):
 			return s
 
 		def fsnotify(ignored, filepath, mask):
+			if self._callid != None:
+				self._callid.cancel()
 			path_segments = filepath.segmentsFrom(self._watch_path)
 			new_path = '/'.join(path_segments)
 			msg = "ftp> /%s (%s)" % (new_path, ', '.join(humanReadableMask(mask)))
-			self._bot.msg(self._channel, msg)
-			pass
+			self._messages.append(msg)
+			self._callid = reactor.callLater(5.0, sendQueuedMessages)
+
+		def sendQueuedMessages():
+			if len(self._messages) > 3:
+				self._bot.msg(self._channel, "ftp> %i Aktionen durchgeführt. Letzte Nachricht:" % len(self._messages))
+				self._bot.msg(self._channel, self._messages[len(self._messages)-1])
+			else:
+				for msg in self._messages:
+					self._bot.msg(self._channel, msg)
 
 		watchMask = ( inotify.IN_MODIFY
 					| inotify.IN_CREATE
