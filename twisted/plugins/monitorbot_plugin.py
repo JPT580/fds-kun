@@ -60,7 +60,7 @@ class MonitorBotService(Service):
 			return s
 
 		def fsnotify(ignored, filepath, mask):
-			if self._callid != None:
+			if self._callid != None and self._callid.active():
 				self._callid.cancel()
 			path_segments = filepath.segmentsFrom(self._watch_path)
 			new_path = '/'.join(path_segments)
