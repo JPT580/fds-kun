@@ -33,6 +33,8 @@ class MonitorBot(irc.IRCClient):
 
 	def privmsg(self, user, channel, msg):
 		"""Called when the bot receives a message."""
+		pass
+	"""
 		sendTo = None
 		prefix = ''
 		senderNick = user.split('!', 1)[0]
@@ -55,6 +57,7 @@ class MonitorBot(irc.IRCClient):
 				"sent message to {receiver}, triggered by {sender}:\n\t{reply}"
 				.format(receiver=sendTo, sender=senderNick, reply=reply)
 			)
+	"""
 
 class MonitorBotFactory(protocol.ClientFactory):
 	protocol = MonitorBot
@@ -64,3 +67,11 @@ class MonitorBotFactory(protocol.ClientFactory):
 		self.channel = channel
 		self.nickname = nickname
 		self.realname = realname
+
+	def clientConnectionLost(self, connector, reason):
+		"""If we get disconnected, reconnect to server."""
+		connector.connect()
+
+	def clientConnectionFailed(self, connector, reason):
+		print "connection failed:", reason
+		reactor.stop()

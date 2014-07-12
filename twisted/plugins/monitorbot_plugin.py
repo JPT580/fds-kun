@@ -67,7 +67,6 @@ class MonitorBotService(Service):
 			msg = "ftp> /%s (%s)" % (new_path, ', '.join(humanReadableMask(mask)))
 			if msg not in self._messages:
 				self._messages.append(msg)
-
 			self._callid = reactor.callLater(5.0, sendQueuedMessages)
 
 		def sendQueuedMessages():
