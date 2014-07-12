@@ -67,22 +67,23 @@ class MonitorBotService(Service):
 			msg = "ftp> /%s (%s)" % (new_path, ', '.join(humanReadableMask(mask)))
 			if msg not in self._messages:
 				self._messages.append(msg)
-			self._callid = reactor.callLater(5.0, sendQueuedMessages)
+			self._callid = reactor.callLater(10.0, sendQueuedMessages)
 
 		def sendQueuedMessages():
 			if len(self._messages) > 3:
-				self._bot.msg(self._channel, "ftp> %i Aktionen durchgeführt. Letzte Nachricht:" % len(self._messages))
+				self._bot.msg(self._channel, "ftp> %i Events übersprungen. Letzter Event:" % len(self._messages)-1)
 				self._bot.msg(self._channel, self._messages[len(self._messages)-1])
 			else:
 				for msg in self._messages:
 					self._bot.msg(self._channel, msg)
 			self._messages = []
 
-		watchMask = ( inotify.IN_MODIFY
-					| inotify.IN_CREATE
-					| inotify.IN_DELETE
-					| inotify.IN_MOVED_FROM
-					| inotify.IN_MOVED_TO )
+		watchMask = (	  inotify.IN_MODIFY
+				| inotify.IN_CREATE
+				| inotify.IN_DELETE
+				| inotify.IN_MOVED_FROM
+				| inotify.IN_MOVED_TO
+			)
 
 		notifier = inotify.INotify()
 		notifier.startReading()
