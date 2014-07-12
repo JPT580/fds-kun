@@ -71,7 +71,7 @@ class MonitorBotService(Service):
 
 		def sendQueuedMessages():
 			if len(self._messages) > 3:
-				self._bot.msg(self._channel, "ftp> %i Events übersprungen. Letzter Event:" % len(self._messages)-1)
+				self._bot.msg(self._channel, "ftp> %i Events übersprungen. Letzter Event:" % (len(self._messages)-1))
 				self._bot.msg(self._channel, self._messages[len(self._messages)-1])
 			else:
 				for msg in self._messages:
