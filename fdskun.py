@@ -34,7 +34,6 @@ class MonitorBot(irc.IRCClient):
 
 	def privmsg(self, user, channel, msg):
 		"""This will get called when the bot receives a message."""
-		self.quit()
 		pass
 
 class MonitorBotFactory(protocol.ClientFactory):
