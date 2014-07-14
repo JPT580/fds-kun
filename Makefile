@@ -1,4 +1,4 @@
 run:
-	twistd -n monitorbot
+	python fdskun.py
 install:
 	pip install -r requirements.txt

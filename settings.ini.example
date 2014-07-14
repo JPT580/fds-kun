@@ -1,5 +1,6 @@
 [irc]
-endpoint = tcp:host=irc.euirc.net:port=6667
+host = irc.euirc.net
+port = 6667
 nickName = FDS-kun
 realName = bot: provides tracking of an ftp folder
 channel = #JPT
