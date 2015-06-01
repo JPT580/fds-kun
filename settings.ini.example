@@ -4,6 +4,7 @@ port = 6667
 nickName = FDS-kun
 realName = bot: provides tracking of an ftp folder
 channel = #JPT
+nickserv_pw = secret
 
 [fsmonitor]
 path=/tmp/foobar/
