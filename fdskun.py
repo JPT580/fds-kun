@@ -26,6 +26,8 @@ class MonitorBot(irc.IRCClient):
 	# callbacks for events
 	def signedOn(self):
 		"""Called when bot has succesfully signed on to server."""
+		self.mode(self.nickname, False, 'x')
+		self.mode(self.nickname, True, 'B')
 		self.join(self.factory.channel)
 
 	def joined(self, channel):
