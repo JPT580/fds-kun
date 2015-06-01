@@ -26,6 +26,9 @@ class MonitorBot(irc.IRCClient):
 	# callbacks for events
 	def signedOn(self):
 		"""Called when bot has succesfully signed on to server."""
+		print("[signed in]")
+		self.msg('NickServ', 'IDENTIFY %s' % self.factory.nickserv_pw)
+                self.mode(self.nickname, True, 'B')
 		self.join(self.factory.channel)
 
 	def joined(self, channel):
@@ -42,9 +45,10 @@ class MonitorBotFactory(protocol.ClientFactory):
 	A new protocol instance will be created each time we connect to the server.
 	"""
 
-	def __init__(self, nickname, channel, fsmon):
+	def __init__(self, nickname, channel, nickserv_pw, fsmon):
 		self.nickname = nickname
 		self.channel = channel
+		self.nickserv_pw = nickserv_pw
 		self.fsmon = fsmon
 
 	def buildProtocol(self, addr):
@@ -138,13 +142,14 @@ if __name__ == '__main__':
 	port = int(config.get('irc', 'port'))
 	channel = config.get('irc', 'channel')
 	nickname = config.get('irc', 'nickname')
+	nickserv_pw = config.get('irc', 'nickserv_pw')
 	realname = config.get('irc', 'realname')
 	path = config.get('fsmonitor', 'path')
 
 	fsmon = FSMonitor(path, channel)
 
 	# create factory protocol and application
-	f = MonitorBotFactory(nickname, channel, fsmon)
+	f = MonitorBotFactory(nickname, channel, nickserv_pw, fsmon)
 
 	# connect factory to this host and port
 	reactor.connectTCP(host, port, f)
