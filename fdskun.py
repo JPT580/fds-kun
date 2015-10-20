@@ -16,11 +16,11 @@ class MonitorBot(irc.IRCClient):
     self.nickname = nickname
 
   def connectionMade(self):
-    irc.IRCClient.connectionMade(self)
+    self.factory.connectionMade(self)
     print("[connected at %s]" % time.asctime(time.localtime(time.time())))
 
   def connectionLost(self, reason):
-    irc.IRCClient.connectionLost(self, reason)
+    self.factory.connectionLost(self, reason)
     print("[disconnected at %s]" % time.asctime(time.localtime(time.time())))
 
   # callbacks for events
