@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from twisted.words.protocols import irc
-from twisted.internet import reactor, protocol
+from twisted.internet import reactor, protocol, ssl
 from twisted.python import usage, log
 from twisted.internet import inotify
 from twisted.python import filepath
@@ -141,6 +141,7 @@ if __name__ == '__main__':
 
 	host = config.get('irc', 'host')
 	port = int(config.get('irc', 'port'))
+	ssl_switch = config.get('irc', 'ssl')
 	channel = config.get('irc', 'channel')
 	nickname = config.get('irc', 'nickname')
 	nickserv_pw = config.get('irc', 'nickserv_pw')
@@ -153,7 +154,10 @@ if __name__ == '__main__':
 	f = MonitorBotFactory(nickname, channel, nickserv_pw, fsmon)
 
 	# connect factory to this host and port
-	reactor.connectTCP(host, port, f)
+	if ssl_switch == 'no':
+		reactor.connectTCP(host, port, f)
+	else:
+		reactor.connectSSL(host, port, f, ssl.ClientContextFactory())
 
 	# run bot
 	reactor.run()

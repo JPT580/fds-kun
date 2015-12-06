@@ -1,6 +1,8 @@
 [irc]
 host = irc.euirc.net
 port = 6667
+ssl = no
+ssl = yes
 nickName = FDS-kun
 realName = bot: provides tracking of an ftp folder
 channel = #JPT
